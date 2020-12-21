@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+       #mapid { height: 900px; }
+    </style>
+ 
+    <title>CDCR Institutions and EQs</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+   crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+   integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+   crossorigin=""></script>
+</head>
+
+<body>
+  <h1>Earquake Happening Around CDCR Institutions</h1>
+    <!--
+    <p>CDCR Institutions <span id="lat"></span></p>
+    <p>longitude: <span id="lon"></span></p>
+    <p>altitude: <span id="alt"></span></p>
+    -->
+     <div id="mapid"></div>
+    <script>
+        const mymap = L.map('mapid').setView([37.93879829035452, -122.48987938170114], 6);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?{foo}', {foo: 'bar', attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'}).addTo(mymap);
+        const marker =[];
+        //const marker = L.marker([0,0]).addTo(mymap);
+        //const marker1 = L.marker([0,0]).addTo(mymap);
+        //let ordinates=[];
+        
+        //const Url='https://api.wheretheiss.at/v1/satellites/25544';
+        /*function InsPos(name, lat, long){
+            this.name=name;
+            this.lat=lat;
+            this.long=long
+        };*/
+        //aspPos=new InsPos('ASP',35.975,-120.12);
+        const arr=[['CCC', 40.402352890548144, -120.51429032169086],
+                    ['CAC', 35.151775611178046, -117.85842576478552],
+                    ['CCI', 35.11353802226646, -118.56946543590202],
+                    ['CHCF', 37.897412450624905, -121.18643095180977],
+                    ['CIM', 33.982159787445525, -117.68262073749625],
+                    ['CIW', 33.95035655607175, -117.63544183539332],
+                    ['CMC', 35.32547250199001, -120.69445956837899],
+                    ['CMF', 38.333389693757795, -121.97939561027798],
+                    ['CRC', 33.93050589591341, -117.57354315374964],
+                    ['COR', 36.058212654892834, -119.55483253771182],
+                    ['LAC', 34.68997881147215, -118.23631261985432],
+                    ['SAC', 38.693572054389456, -121.15245499314419],
+                    ['SOL', 38.32097908755151, -121.97486825081629],
+                    ['COR', 36.054308499659534, -119.55006092037262],
+                    ['CAL', 33.16387138717366, -115.49320421114955],
+                    ['CEN', 32.82084030184737, -115.78919740874396],
+                    ['CCWF', 37.09046821655466, -120.14986605168288],
+                    ['CVSP', 33.56303062453343, -114.90884386573417],
+                    ['CTF', 36.47103127980587, -121.3826079070417],
+                    ['DVI', 37.742625725202984, -121.33763788146781],
+                    ['FSP', 38.69620210462894, -121.16373702359144],
+                    ['HDSP', 40.40904111487289, -120.51613236559896],
+                    ['ISP', 33.558458092146786, -114.92668686713024],
+                    ['KVSP', 35.76855196555402, -119.32298815305872],
+                    ['MCSP', 38.37085797031427, -120.95369630650391],
+                    ['NKSP', 35.7829470522704, -119.30963502296784],
+                    ['PBSP', 41.85507242288799, -124.15142410826753],
+                    ['PVSP', 36.12990266301827, -120.24915577820352],
+                    ['RJD', 32.61454750230059, -116.93216777252752],
+                    ['SVSP', 36.46760077788707, -121.38539709470862],
+                    ['SQ', 37.93879829035452, -122.48987938170114],
+                    ['SCC', 37.89369419418379, -120.53804662241272],
+                    ['VSP', 37.10142224304219, -120.15316650921214],
+                    ['WSP', 35.594164690103774, -119.40726410849042]];
+        
+        for (let i=0; i<arr.length; i++){
+          marker[i] = L.marker([0,0]).addTo(mymap);
+          marker[i].setLatLng([arr[i][1],arr[i][2]]);
+            //mymap.setView([latitude,longitude],2);
+            marker[i].bindPopup(arr[i][0]).openPopup(); 
+         //marker1.setLatLng([arr[1].lat,arr[1].long]);
+            //mymap.setView([latitude,longitude],2);
+            //marker1.bindPopup(arr[1].name).openPopup();
+        }
+            const Url='https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson';
+        //const urlSig='https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_hour.geojson';
+        
+        async function getEarthquake(){
+            const response= await fetch(Url);
+            const pos=await response.json();
+            let coords=[];
+            console.log(pos);
+            L.geoJSON(pos, {
+                style: function (feature) {
+                    return {color: feature.properties.color}
+                },
+                pointToLayer: function(geoJsonPoint, latlng) {
+                //let popContent=geoJsonPoint.feature.properties.description;
+                    //console.log(popContent);
+                    return L.circleMarker(latlng)
+                    //L.circle(latlng, {radius: 2000})
+                    //L.circleMarker(latlng)
+                    //L.circle(latlng, {radius: 2000})
+                },
+                onEachFeature: function(feature, layer){
+                  
+                    coords.push(feature.geometry.coordinates);
+                  }
+            }).bindPopup(function (layer) {
+                return layer.feature.properties.title;
+            }).addTo(mymap);
+            //console.log(coords);
+            for(let p=0; p<coords.length; p++){
+                L.circle([coords[p][1],coords[p][0]], {radius: 40000, fill: false, color:'red'}).addTo(mymap);
+                 //L.circle([110,0], {radius: 20000}).addTo(mymap);
+                //console.log([coords[p][0],coords[p][1]])
+            };
+            };
+            //getEarthquake();
+          setInterval(getEarthquake,60000); 
+        
+            /*const {latitude, longitude, altitude}=pos;
+            document.getElementById("lat").textContent=latitude;
+            document.getElementById("lon").textContent=longitude;
+            document.getElementById("alt").textContent=altitude;
+            //ordinates.push(latitude,longitude);
+            //console.log(latitude);
+            //ordinates[1]=longitude;
+            //console.log(latitude, longitude);
+            marker.setLatLng([latitude,longitude]);
+            mymap.setView([latitude,longitude],2);
+            marker.bindPopup('Hello from space').openPopup();*/
+                                                   
+    </script>
+</body>
+</html>
+
